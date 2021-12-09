@@ -4,9 +4,11 @@ const connect = require("./connect");
 const PORT = 2000;
 
 const teacherRoute = require("./routes/admin/teacher");
+const studentRoute = require("./routes/student");
 
 app.use(express.json());
 app.use("/admin", teacherRoute);
+app.use("/student", studentRoute);
 
 connect;
 
