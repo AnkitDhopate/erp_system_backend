@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const connect = require("./connect");
-const PORT = 80;
+const PORT = 2000;
 
 const teacherRoute = require("./routes/admin/teacher");
 
