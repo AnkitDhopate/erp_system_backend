@@ -1,12 +1,14 @@
 const express = require("express");
 const app = express();
 const connect = require("./connect");
-const PORT = 80;
+const PORT = 2000;
 
 const teacherRoute = require("./routes/admin/teacher");
+const studentRoute = require("./routes/student");
 
 app.use(express.json());
 app.use("/admin", teacherRoute);
+app.use("/student", studentRoute);
 
 connect;
 
