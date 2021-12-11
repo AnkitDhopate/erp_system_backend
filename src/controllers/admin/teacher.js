@@ -43,10 +43,23 @@ exports.teacherSignin = (req, res) => {
               expiresIn: "1d",
             }
           );
+          const { _id, name, email, contact, username, role, branch } =
+            result[0];
 
           res.cookie("token", token, { expiresIn: "1d" });
 
-          return res.status(201).json({ result });
+          return res.status(201).json({
+            token,
+            user: {
+              _id,
+              name,
+              email,
+              contact,
+              username,
+              role,
+              branch,
+            },
+          });
         } else {
           return res.status(401).json({ error: "password incorrect" });
         }
