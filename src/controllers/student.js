@@ -1,4 +1,4 @@
-const express = require('.././connect');
+const express = require(".././connect");
 
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
@@ -23,6 +23,7 @@ exports.studentRegister = async (req, res) => {
 };
 
 exports.studentSignin = async (req, res) => {
+  console.log(req.body);
   const { username, password } = req.body;
   express.db.query(
     "SELECT * FROM students where username = ?",
@@ -33,18 +34,42 @@ exports.studentSignin = async (req, res) => {
       }
 
       if (result) {
+        console.log(result);
         const user = await bcrypt.compare(password, result[0].password);
         console.log(result);
         if (user) {
           const token = jwt.sign(
-            { _id: result[0].students_id },
+            { _id: result[0].std_id },
             "this-is-secrete-key-store-it-in-.env",
             {
               expiresIn: "1d",
             }
           );
+          const {
+            std_id,
+            name,
+            contact,
+            email,
+            username,
+            roll_no,
+            branch,
+            dob,
+          } = result[0];
+
           res.cookie("token", token, { expiresIn: "1d" });
-          return res.status(201).json({ result });
+          return res.status(201).json({
+            token,
+            user: {
+              _id: std_id,
+              name,
+              contact,
+              email,
+              username,
+              roll_no,
+              branch,
+              dob,
+            },
+          });
         } else {
           return res.status(401).json({ error: "password incorrect" });
         }
