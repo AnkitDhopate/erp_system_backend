@@ -1,8 +1,5 @@
-<<<<<<< HEAD
 const express = require('.././connect');
-=======
-const express = require(".././connect");
->>>>>>> 279c01bfff950f19e3b4e62154ae7aa9018d650b
+
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
 
