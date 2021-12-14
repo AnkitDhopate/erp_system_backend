@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
 
 exports.studentRegister = async (req, res) => {
+  console.log(req.body);
   const { name, contact, email, username, roll_no, branch, dob, password } =
     req.body;
   const hash_password = await bcrypt.hash(password, 10);
@@ -13,6 +14,7 @@ exports.studentRegister = async (req, res) => {
     [name, email, username, contact, roll_no, branch, dob, hash_password],
     (err, result) => {
       if (err) {
+        console.log(err);
         return res.status(400).json({ err });
       }
       if (result) {
