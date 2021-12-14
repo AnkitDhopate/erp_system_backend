@@ -23,20 +23,17 @@ exports.studentRegister = async (req, res) => {
 };
 
 exports.studentSignin = async (req, res) => {
-  console.log(req.body);
   const { username, password } = req.body;
   express.db.query(
     "SELECT * FROM students where username = ?",
     [username],
     async (error, result) => {
       if (error) {
-        return res.status(404).json({ error: "Username Incorrect" });
+        return res.status(404).json({ error: "No such user found" });
       }
 
       if (result) {
-        console.log(result);
         const user = await bcrypt.compare(password, result[0].password);
-        console.log(result);
         if (user) {
           const token = jwt.sign(
             { _id: result[0].std_id },
@@ -46,11 +43,12 @@ exports.studentSignin = async (req, res) => {
             }
           );
           const {
-            std_id,
+            _id,
             name,
             contact,
             email,
             username,
+            role,
             roll_no,
             branch,
             dob,
@@ -60,11 +58,12 @@ exports.studentSignin = async (req, res) => {
           return res.status(201).json({
             token,
             user: {
-              _id: std_id,
+              _id,
               name,
               contact,
               email,
               username,
+              role,
               roll_no,
               branch,
               dob,
