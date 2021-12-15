@@ -27,10 +27,8 @@ exports.teacherSignin = (req, res) => {
     "SELECT * FROM teacher where username = ?",
     [username],
     async (error, result) => {
-      if (error) {
-        return res
-          .status(404)
-          .json({ error: "User with given username not found" });
+      if (error || result.length == 0) {
+        return res.status(404).json({ error: "No such user found" });
       }
 
       if (result) {
