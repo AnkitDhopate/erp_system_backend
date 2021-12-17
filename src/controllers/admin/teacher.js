@@ -72,14 +72,81 @@ exports.teacherSignout = (req, res) => {
 };
 
 exports.getAllStudentData = async (req, res) => {
-  express.db.query("SELECT * FROM students", async (error, result) => {
-    if (error) {
-      return res.status(400).json({ error });
+
+
+  express.db.query(
+    "SELECT * FROM students",
+    async (err, result) => {
+      if (err) {
+        return res.status(400).json({ err });
+      }
+
+      if (result) {
+        return res.status(201).json({ result });
+
+      }
+      console.log(result);
+    }
+  );
+};
+
+exports.deleteStudentData = async (req, res) => {
+  const { std_id } = req.body;
+  console.log(req.body);
+  express.db.query(
+    `DELETE FROM students where std_id = ${std_id}`,
+
+    async (err, result) => {
+      if (err) {
+        return res.status(400).json({ err });
+      }
+
+      if (result) {
+        return res.status(201).json({ result });
+      }
+      console.log(result);
+    }
+  );
+
+};
+
+
+
+exports.editStudentData = async (req, res, next) => {
+  const { std_id} = req.body;
+  var name = req.body.name;
+  var email = req.body.email;
+  var contact = req.body.contact;
+  var roll_no = req.body.roll_no;
+  var branch = req.body.branch;
+  var dob = req.body.dob;
+
+  express.db.query(
+    `UPDATE students SET name="${name}", email="${email}", contact="${contact}", roll_no="${roll_no}", branch="${branch}", dob="${dob}" WHERE std_id = ${std_id} `,
+
+  async (err, result) => {
+    if (err) {
+      return res.status(400).json({ err });
     }
 
     if (result) {
       return res.status(201).json({ result });
     }
     console.log(result);
-  });
-};
+  }
+  )
+}
+
+
+
+
+  // express.db.query("SELECT * FROM students", async (error, result) => {
+  //   if (error) {
+  //     return res.status(400).json({ error });
+  //   }
+
+  //   if (result) {
+  //     return res.status(201).json({ result });
+  //   }
+  //   console.log(result);
+  // });
