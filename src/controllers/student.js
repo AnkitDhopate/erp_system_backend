@@ -81,3 +81,4 @@ exports.studentSignout = (req, res) => {
   res.clearCookie("token");
   res.status(201).json({ message: "Logged out successfully " });
 };
+
