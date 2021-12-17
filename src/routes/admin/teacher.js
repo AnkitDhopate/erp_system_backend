@@ -14,8 +14,8 @@ router.post("/teacher/register", teacherRegister);
 router.post("/teacher/signin", teacherSignin);
 router.post("/teacher/signout", teacherSignout);
 
-router.delete("/teacher/deleteStudentData", deleteStudentData);
-router.put("/teacher/editStudentData", editStudentData);
+router.delete("/teacher/deleteStudentData", requireSignIn, deleteStudentData);
+router.put("/teacher/editStudentData", requireSignIn, editStudentData);
 
 router.get("/teacher/get-all-student-data", requireSignIn, getAllStudentData);
 

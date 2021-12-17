@@ -140,13 +140,13 @@ exports.editStudentData = async (req, res, next) => {
 
 
 
-  express.db.query("SELECT * FROM students", async (error, result) => {
-    if (error) {
-      return res.status(400).json({ error });
-    }
+  // express.db.query("SELECT * FROM students", async (error, result) => {
+  //   if (error) {
+  //     return res.status(400).json({ error });
+  //   }
 
-    if (result) {
-      return res.status(201).json({ result });
-    }
-    console.log(result);
-  });
+  //   if (result) {
+  //     return res.status(201).json({ result });
+  //   }
+  //   console.log(result);
+  // });
