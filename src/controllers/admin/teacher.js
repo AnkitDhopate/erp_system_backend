@@ -71,26 +71,15 @@ exports.teacherSignout = (req, res) => {
   res.status(201).json({ message: "Logged out successfully" });
 };
 
-exports.getAllStudentData = async(req, res) =>{
-     
-      express.db.query(
-        "SELECT * FROM students",
-        async(err, result) => {
-          if (err) {
-            return res.status(400).json({ err });
-          }
-    
-          if (result) {
-            return res.status(201).json({ result });
-            
-          }
-          console.log(result);
-        }
-      );
-    };
-    
+exports.getAllStudentData = async (req, res) => {
+  express.db.query("SELECT * FROM students", async (error, result) => {
+    if (error) {
+      return res.status(400).json({ error });
+    }
 
-
-
-
-
+    if (result) {
+      return res.status(201).json({ result });
+    }
+    console.log(result);
+  });
+};
