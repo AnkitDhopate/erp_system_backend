@@ -7,12 +7,17 @@ const {
   editStudentData,
   deleteStudentData,
 } = require("../../controllers/admin/teacher");
+const { requireSignIn } = require("../../middlewares/middleware");
 const router = express.Router();
 
 router.post("/teacher/register", teacherRegister);
 router.post("/teacher/signin", teacherSignin);
 router.post("/teacher/signout", teacherSignout);
-router.get("/teacher/get-all-student-data", getAllStudentData);
+
 router.delete("/teacher/deleteStudentData", deleteStudentData);
 router.put("/teacher/editStudentData", editStudentData);
+
+router.get("/teacher/get-all-student-data", requireSignIn, getAllStudentData);
+
+
 module.exports = router;
