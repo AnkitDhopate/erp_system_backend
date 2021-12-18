@@ -72,30 +72,23 @@ exports.teacherSignout = (req, res) => {
 };
 
 exports.getAllStudentData = async (req, res) => {
-
-
-  express.db.query(
-    "SELECT * FROM students",
-    async (err, result) => {
-      if (err) {
-        return res.status(400).json({ err });
-      }
-
-      if (result) {
-        return res.status(201).json({ result });
-
-      }
-      console.log(result);
+  express.db.query("SELECT * FROM students", async (err, result) => {
+    if (err) {
+      return res.status(400).json({ err });
     }
-  );
+
+    if (result) {
+      return res.status(201).json({ result });
+    }
+    console.log(result);
+  });
 };
 
 exports.deleteStudentData = async (req, res) => {
-  const { std_id } = req.body;
-  console.log(req.body);
+  const std_id = req.params._id;
   express.db.query(
-    `DELETE FROM students where std_id = ${std_id}`,
-
+    `DELETE FROM students where std_id = ?`,
+    [std_id],
     async (err, result) => {
       if (err) {
         return res.status(400).json({ err });
@@ -107,13 +100,10 @@ exports.deleteStudentData = async (req, res) => {
       console.log(result);
     }
   );
-
 };
 
-
-
 exports.editStudentData = async (req, res, next) => {
-  const { std_id} = req.body;
+  const { std_id } = req.body;
   var name = req.body.name;
   var email = req.body.email;
   var contact = req.body.contact;
@@ -124,29 +114,26 @@ exports.editStudentData = async (req, res, next) => {
   express.db.query(
     `UPDATE students SET name="${name}", email="${email}", contact="${contact}", roll_no="${roll_no}", branch="${branch}", dob="${dob}" WHERE std_id = ${std_id} `,
 
-  async (err, result) => {
-    if (err) {
-      return res.status(400).json({ err });
+    async (err, result) => {
+      if (err) {
+        return res.status(400).json({ err });
+      }
+
+      if (result) {
+        return res.status(201).json({ result });
+      }
+      console.log(result);
     }
+  );
+};
 
-    if (result) {
-      return res.status(201).json({ result });
-    }
-    console.log(result);
-  }
-  )
-}
+// express.db.query("SELECT * FROM students", async (error, result) => {
+//   if (error) {
+//     return res.status(400).json({ error });
+//   }
 
-
-
-
-  // express.db.query("SELECT * FROM students", async (error, result) => {
-  //   if (error) {
-  //     return res.status(400).json({ error });
-  //   }
-
-  //   if (result) {
-  //     return res.status(201).json({ result });
-  //   }
-  //   console.log(result);
-  // });
+//   if (result) {
+//     return res.status(201).json({ result });
+//   }
+//   console.log(result);
+// });
