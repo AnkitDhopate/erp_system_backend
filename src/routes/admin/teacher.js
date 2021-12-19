@@ -10,7 +10,7 @@ const {
 const { requireSignIn } = require("../../middlewares/middleware");
 const router = express.Router();
 
-router.post("/teacher/register", teacherRegister);
+router.post("/teacher/register", requireSignIn, teacherRegister);
 router.post("/teacher/signin", teacherSignin);
 router.post("/teacher/signout", teacherSignout);
 

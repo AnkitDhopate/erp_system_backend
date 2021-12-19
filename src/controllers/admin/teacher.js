@@ -103,13 +103,8 @@ exports.deleteStudentData = async (req, res) => {
 };
 
 exports.editStudentData = async (req, res, next) => {
-  const { std_id } = req.body;
-  var name = req.body.name;
-  var email = req.body.email;
-  var contact = req.body.contact;
-  var roll_no = req.body.roll_no;
-  var branch = req.body.branch;
-  var dob = req.body.dob;
+  console.log(req.body);
+  const { std_id, name, email, contact, roll_no, branch, dob } = req.body;
 
   express.db.query(
     `UPDATE students SET name="${name}", email="${email}", contact="${contact}", roll_no="${roll_no}", branch="${branch}", dob="${dob}" WHERE std_id = ${std_id} `,
