@@ -24,6 +24,10 @@ app.get("/", (req, res) => {
   res.status(201).json({ msg: "Home Page" });
 });
 
+app.get("*", (req, res) => {
+  res.json({ msg: "404 Page" });
+});
+
 app.listen(PORT, () => {
   console.log(`Connected to port ${PORT}`);
 });
