@@ -3,20 +3,34 @@ const express = require("../../connect");
 const jwt = require("jsonwebtoken");
 
 exports.principalRegister = async (req, res) => {
-  console.log(req.body);
   const { name, contact, email, username, password } = req.body;
   const hash_password = await bcrypt.hash(password, 10);
 
-  const temp = await express.db.query(
-    "INSERT INTO principal(name, contact, email, username, password) VALUES (?, ?, ?, ?, ?)",
-    [name, contact, email, username, hash_password],
-    (err, result) => {
-      if (err) {
+  const principal_exist_check = await express.db.query(
+    "SELECT * FROM principal",
+    async (error, principal) => {
+      if (error) {
         return res.status(400).json({ err });
       }
 
-      if (result) {
-        return res.status(201).json({ result });
+      if (principal.length == 0) {
+        const temp = await express.db.query(
+          "INSERT INTO principal(name, contact, email, username, password) VALUES (?, ?, ?, ?, ?)",
+          [name, contact, email, username, hash_password],
+          (err, result) => {
+            if (err) {
+              return res.status(400).json({ err });
+            }
+
+            if (result) {
+              return res.status(201).json({ result });
+            }
+          }
+        );
+      } else {
+        return res
+          .status(401)
+          .json({ error: "Principal profile already exists" });
       }
     }
   );
