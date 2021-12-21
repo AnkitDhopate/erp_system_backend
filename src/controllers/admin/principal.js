@@ -3,6 +3,7 @@ const express = require("../../connect");
 const jwt = require("jsonwebtoken");
 
 exports.principalRegister = async (req, res) => {
+  console.log(req.body);
   const { name, contact, email, username, password } = req.body;
   const hash_password = await bcrypt.hash(password, 10);
 
@@ -41,8 +42,7 @@ exports.principalSignin = (req, res) => {
               expiresIn: "1d",
             }
           );
-          const { _id, name, email, contact, username, role} =
-            result[0];
+          const { _id, name, email, contact, username, role } = result[0];
 
           res.cookie("token", token, { expiresIn: "1d" });
 
