@@ -6,7 +6,16 @@ exports.hodRegister = async (req, res) => {
   const { name, contact, email, branch, username, password } = req.body;
   const hash_password = await bcrypt.hash(password, 10);
 
-  const temp = await express.db.query(
+  const hod_exist_check = await express.db.query(
+    "SELECT * FROM hod where branch = ?",
+    [branch],
+    async (error, hod) => {
+      if (error) {
+        return res.status(400).json({ err });
+      }
+
+      if (hod.length === 0) {
+     const temp = await express.db.query(
     "INSERT INTO hod(name, contact,branch, email, username, password) VALUES (?, ?, ?, ?, ?,?)",
     [name, contact, branch, email, username, hash_password],
     (err, result) => {
@@ -19,6 +28,13 @@ exports.hodRegister = async (req, res) => {
       }
     }
   );
+} else {
+    return res
+      .status(401)
+      .json({ error: `Hod has already been appointed for ${branch} Branch`});
+  }
+}
+);
 };
 
 exports.hodSignin = (req, res) => {
