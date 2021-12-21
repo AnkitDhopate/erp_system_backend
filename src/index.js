@@ -12,11 +12,11 @@ const principalRoute = require("./routes/admin/principal");
 
 app.use(express.json());
 app.use(cors());
-app.use("/admin", teacherRoute);
+app.use("/admin/teacher", teacherRoute);
 app.use("/student", studentRoute);
 app.use("/admin", adminRoute);
-app.use("/hod", hodRoute);
-app.use("/principal", principalRoute);
+app.use("/admin/hod", hodRoute);
+app.use("/admin/principal", principalRoute);
 
 connect;
 

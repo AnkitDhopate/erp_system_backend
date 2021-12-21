@@ -3,12 +3,12 @@ const express = require("../../connect");
 const jwt = require("jsonwebtoken");
 
 exports.hodRegister = async (req, res) => {
-  const { name, contact, email, username, password } = req.body;
+  const { name, contact, email, branch, username, password } = req.body;
   const hash_password = await bcrypt.hash(password, 10);
 
   const temp = await express.db.query(
-    "INSERT INTO hod(name, contact, email, username, password) VALUES (?, ?, ?, ?, ?)",
-    [name, contact, email, username, hash_password],
+    "INSERT INTO hod(name, contact,branch, email, username, password) VALUES (?, ?, ?, ?, ?,?)",
+    [name, contact, branch, email, username, hash_password],
     (err, result) => {
       if (err) {
         return res.status(400).json({ err });
@@ -41,8 +41,7 @@ exports.hodSignin = (req, res) => {
               expiresIn: "1d",
             }
           );
-          const { _id, name, email, contact, username, role } =
-            result[0];
+          const { _id, name, email, contact, username, role } = result[0];
 
           res.cookie("token", token, { expiresIn: "1d" });
 

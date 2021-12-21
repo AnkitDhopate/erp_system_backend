@@ -1,14 +1,14 @@
 const express = require("express");
 const {
-    hodRegister,
-    hodSignin,
-    hodSignout,
+  hodRegister,
+  hodSignin,
+  hodSignout,
 } = require("../../controllers/admin/hod");
 const { requireSignIn } = require("../../middlewares/middleware");
 const router = express.Router();
 
-router.post("/hod/register", hodRegister);
-router.post("/hod/signin", hodSignin);
-router.post("/hod/signout", hodSignout);
+router.post("/register", requireSignIn, hodRegister);
+router.post("/signin", hodSignin);
+router.post("/signout", hodSignout);
 
 module.exports = router;
