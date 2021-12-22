@@ -15,26 +15,26 @@ exports.hodRegister = async (req, res) => {
       }
 
       if (hod.length === 0) {
-     const temp = await express.db.query(
-    "INSERT INTO hod(name, contact,branch, email, username, password) VALUES (?, ?, ?, ?, ?,?)",
-    [name, contact, branch, email, username, hash_password],
-    (err, result) => {
-      if (err) {
-        return res.status(400).json({ err });
-      }
+        const temp = await express.db.query(
+          "INSERT INTO hod(name, contact,branch, email, username, password) VALUES (?, ?, ?, ?, ?,?)",
+          [name, contact, branch, email, username, hash_password],
+          (err, result) => {
+            if (err) {
+              return res.status(400).json({ err });
+            }
 
-      if (result) {
-        return res.status(201).json({ result });
+            if (result) {
+              return res.status(201).json({ result });
+            }
+          }
+        );
+      } else {
+        return res.status(203).json({
+          error: `Hod has already been appointed for ${branch} Branch`,
+        });
       }
     }
   );
-} else {
-    return res
-      .status(401)
-      .json({ error: `Hod has already been appointed for ${branch} Branch`});
-  }
-}
-);
 };
 
 exports.hodSignin = (req, res) => {

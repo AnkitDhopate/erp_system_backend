@@ -29,7 +29,7 @@ exports.principalRegister = async (req, res) => {
         );
       } else {
         return res
-          .status(401)
+          .status(203)
           .json({ error: "Principal profile already exists" });
       }
     }
