@@ -69,3 +69,52 @@ exports.adminSignout = (req, res) => {
   res.clearCookie("token");
   res.status(201).json({ message: "Logged out successfully" });
 };
+
+exports.getAllAdminData = async (req, res) => {
+  express.db.query("SELECT * FROM admin", async (err, result) => {
+    if (err) {
+      return res.status(400).json({ err });
+    }
+
+    if (result) {
+      return res.status(201).json({ result });
+    }
+    console.log(result);
+  });
+};
+
+exports.deleteAdminData = async (req, res) => {
+  const adm_id = req.params._id;
+  express.db.query(
+    `DELETE FROM admin where adm_id = ?`,
+    [adm_id],
+    async (err, result) => {
+      if (err) {
+        return res.status(400).json({ err });
+      }
+
+      if (result) {
+        return res.status(201).json({ result });
+      }
+      console.log(result);
+    }
+  );
+};
+
+exports.editAdminData = async (req, res) => {
+  const { adm_id, name, email, contact, roll_no } = req.body;
+
+  express.db.query(
+    `UPDATE admin SET name="${name}", email="${email}", contact="${contact}", roll_no="${roll_no}", WHERE adm_id = ${adm_id} `,
+    (err, result) => {
+      if (err) {
+        return res.status(400).json({ err });
+      }
+
+      if (result) {
+        return res.status(201).json({ result });
+      }
+      console.log(result);
+    }
+  );
+};
