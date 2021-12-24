@@ -70,3 +70,52 @@ exports.teacherSignout = (req, res) => {
   res.clearCookie("token");
   res.status(201).json({ message: "Logged out successfully" });
 };
+
+exports.getAllTeacherData = async (req, res) => {
+  express.db.query("SELECT * FROM teacher", async (err, result) => {
+    if (err) {
+      return res.status(400).json({ err });
+    }
+
+    if (result) {
+      return res.status(201).json({ result });
+    }
+    console.log(result);
+  });
+};
+
+exports.deleteTeacherData = async (req, res) => {
+  const tech_id = req.params._id;
+  express.db.query(
+    `DELETE FROM teacher where _id = ?`,
+    [tech_id],
+    async (err, result) => {
+      if (err) {
+        return res.status(400).json({ err });
+      }
+
+      if (result) {
+        return res.status(201).json({ result });
+      }
+      console.log(result);
+    }
+  );
+};
+
+exports.editTeacherData = async (req, res) => {
+  const { tech_id, name, email,branch, contact } = req.body;
+
+  express.db.query(
+    `UPDATE teacher SET name="${name}", email="${email}", contact="${contact}", branch="${branch}" WHERE _id = ${tech_id} `,
+    (err, result) => {
+      if (err) {
+        return res.status(400).json({ err });
+      }
+
+      if (result) {
+        return res.status(201).json({ result });
+      }
+      console.log(result);
+    }
+  );
+};

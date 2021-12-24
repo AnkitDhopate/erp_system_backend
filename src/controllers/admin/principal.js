@@ -83,3 +83,53 @@ exports.principalSignout = (req, res) => {
   res.clearCookie("token");
   res.status(201).json({ message: "Logged out successfully" });
 };
+
+
+exports.getAllPrincipalData = async (req, res) => {
+  express.db.query("SELECT * FROM principal", async (err, result) => {
+    if (err) {
+      return res.status(400).json({ err });
+    }
+
+    if (result) {
+      return res.status(201).json({ result });
+    }
+    console.log(result);
+  });
+};
+
+exports.deletePrincipalData = async (req, res) => {
+  const pri_id = req.params._id;
+  express.db.query(
+    `DELETE FROM principal where _id = ?`,
+    [pri_id],
+    async (err, result) => {
+      if (err) {
+        return res.status(400).json({ err });
+      }
+
+      if (result) {
+        return res.status(201).json({ result });
+      }
+      console.log(result);
+    }
+  );
+};
+
+exports.editPrincipalData = async (req, res) => {
+  const { pri_id, name, email, contact} = req.body;
+
+  express.db.query(
+    `UPDATE principal SET name="${name}", email="${email}", contact="${contact}" WHERE _id = ${pri_id} `,
+    (err, result) => {
+      if (err) {
+        return res.status(400).json({ err });
+      }
+
+      if (result) {
+        return res.status(201).json({ result });
+      }
+      console.log(result);
+    }
+  );
+};
