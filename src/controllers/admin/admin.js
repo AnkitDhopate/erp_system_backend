@@ -86,7 +86,7 @@ exports.getAllAdminData = async (req, res) => {
 exports.deleteAdminData = async (req, res) => {
   const adm_id = req.params._id;
   express.db.query(
-    `DELETE FROM admin where adm_id = ?`,
+    `DELETE FROM admin where _id = ?`,
     [adm_id],
     async (err, result) => {
       if (err) {
@@ -102,10 +102,10 @@ exports.deleteAdminData = async (req, res) => {
 };
 
 exports.editAdminData = async (req, res) => {
-  const { adm_id, name, email, contact, roll_no } = req.body;
+  const { adm_id, name, email, contact } = req.body;
 
   express.db.query(
-    `UPDATE admin SET name="${name}", email="${email}", contact="${contact}", roll_no="${roll_no}", WHERE adm_id = ${adm_id} `,
+    `UPDATE admin SET name="${name}", email="${email}", contact="${contact}" WHERE _id = ${adm_id} `,
     (err, result) => {
       if (err) {
         return res.status(400).json({ err });
