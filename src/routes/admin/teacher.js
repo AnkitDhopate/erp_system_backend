@@ -1,5 +1,10 @@
 const express = require("express");
 const {
+  deleteTeacherData,
+  editTeacherData,
+  getAllTeacherData,
+} = require("../../controllers/admin/teacher");
+const {
   teacherRegister,
   teacherSignin,
   teacherSignout,
@@ -10,5 +15,8 @@ const router = express.Router();
 router.post("/register", requireSignIn, teacherRegister);
 router.post("/signin", teacherSignin);
 router.post("/signout", teacherSignout);
+router.delete("/delete-teacher/:_id", requireSignIn, deleteTeacherData);
+router.put("/edit-teacher-data", requireSignIn, editTeacherData);
+router.get("/get-all-teacher-data", requireSignIn, getAllTeacherData);
 
 module.exports = router;

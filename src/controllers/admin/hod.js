@@ -57,7 +57,7 @@ exports.hodSignin = (req, res) => {
               expiresIn: "1d",
             }
           );
-          const { _id, name, email, contact, username, role } = result[0];
+          const { _id, name, email, contact, branch, username, role } = result[0];
 
           res.cookie("token", token, { expiresIn: "1d" });
 
@@ -68,6 +68,7 @@ exports.hodSignin = (req, res) => {
               name,
               email,
               contact,
+              branch,
               username,
               role,
             },
@@ -83,4 +84,53 @@ exports.hodSignin = (req, res) => {
 exports.hodSignout = (req, res) => {
   res.clearCookie("token");
   res.status(201).json({ message: "Logged out successfully" });
+};
+
+exports.getAllHodData = async (req, res) => {
+  express.db.query("SELECT * FROM hod", async (err, result) => {
+    if (err) {
+      return res.status(400).json({ err });
+    }
+
+    if (result) {
+      return res.status(201).json({ result });
+    }
+    console.log(result);
+  });
+};
+
+exports.deleteHodData = async (req, res) => {
+  const hod_id = req.params._id;
+  express.db.query(
+    `DELETE FROM hod where _id = ?`,
+    [hod_id],
+    async (err, result) => {
+      if (err) {
+        return res.status(400).json({ err });
+      }
+
+      if (result) {
+        return res.status(201).json({ result });
+      }
+      console.log(result);
+    }
+  );
+};
+
+exports.editHodData = async (req, res) => {
+  const { hod_id, name, email,branch, contact } = req.body;
+
+  express.db.query(
+    `UPDATE hod SET name="${name}", email="${email}", contact="${contact}" , branch="${branch}" WHERE _id = ${hod_id} `,
+    (err, result) => {
+      if (err) {
+        return res.status(400).json({ err });
+      }
+
+      if (result) {
+        return res.status(201).json({ result });
+      }
+      console.log(result);
+    }
+  );
 };
