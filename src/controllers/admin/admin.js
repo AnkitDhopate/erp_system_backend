@@ -101,10 +101,10 @@ exports.deleteAdminData = async (req, res) => {
 };
 
 exports.editAdminData = async (req, res) => {
-  const { adm_id, name, email, contact } = req.body;
+  const { _id, name, email, contact } = req.body;
 
   express.db.query(
-    `UPDATE admin SET name="${name}", email="${email}", contact="${contact}" WHERE _id = ${adm_id} `,
+    `UPDATE admin SET name="${name}", email="${email}", contact="${contact}" WHERE _id = ${_id} `,
     (err, result) => {
       if (err) {
         return res.status(400).json({ err });
