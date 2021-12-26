@@ -96,10 +96,11 @@ exports.getAllStudentData = async (req, res) => {
 };
 
 exports.deleteStudentData = async (req, res) => {
-  const std_id = req.params._id;
+  const _id = req.params._id;
   express.db.query(
     `DELETE FROM students where _id = ?`,
-    [std_id],
+    [_id],
+
     async (err, result) => {
       if (err) {
         return res.status(400).json({ err });
@@ -114,10 +115,10 @@ exports.deleteStudentData = async (req, res) => {
 };
 
 exports.editStudentData = async (req, res) => {
-  const { std_id, name, email, contact, roll_no, branch, dob } = req.body;
-
+  const { _id, name, email, contact, roll_no, branch, dob } = req.body;
   express.db.query(
-    `UPDATE students SET name="${name}", email="${email}", contact="${contact}", roll_no="${roll_no}", branch="${branch}", dob="${dob}" WHERE _id = ${std_id} `,
+    `UPDATE students SET name="${name}", email="${email}", contact="${contact}", roll_no="${roll_no}", branch="${branch}", dob="${dob}" WHERE _id = ${_id} `,
+
     (err, result) => {
       if (err) {
         return res.status(400).json({ err });
