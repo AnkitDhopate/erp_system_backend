@@ -50,14 +50,11 @@ exports.hodSignin = (req, res) => {
       if (result) {
         const user = await bcrypt.compare(password, result[0].password);
         if (user) {
-          const token = jwt.sign(
-            { _id: result[0]._id },
-            "this-is-secrete-key-store-it-in-.env",
-            {
-              expiresIn: "1d",
-            }
-          );
-          const { _id, name, email, contact, branch, username, role } = result[0];
+          const token = jwt.sign({ _id: result[0]._id }, process.env.JWT_KEY, {
+            expiresIn: "1d",
+          });
+          const { _id, name, email, contact, branch, username, role } =
+            result[0];
 
           res.cookie("token", token, { expiresIn: "1d" });
 
@@ -118,7 +115,7 @@ exports.deleteHodData = async (req, res) => {
 };
 
 exports.editHodData = async (req, res) => {
-  const { hod_id, name, email,branch, contact } = req.body;
+  const { hod_id, name, email, branch, contact } = req.body;
 
   express.db.query(
     `UPDATE hod SET name="${name}", email="${email}", contact="${contact}" , branch="${branch}" WHERE _id = ${hod_id} `,
