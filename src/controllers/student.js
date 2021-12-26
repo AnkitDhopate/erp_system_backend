@@ -35,13 +35,9 @@ exports.studentSignin = async (req, res) => {
       if (result) {
         const user = await bcrypt.compare(password, result[0].password);
         if (user) {
-          const token = jwt.sign(
-            { _id: result[0]._id },
-            "this-is-secrete-key-store-it-in-.env",
-            {
-              expiresIn: "1d",
-            }
-          );
+          const token = jwt.sign({ _id: result[0]._id }, process.env.JWT_KEY, {
+            expiresIn: "1d",
+          });
           const {
             _id,
             name,

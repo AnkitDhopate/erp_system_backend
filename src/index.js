@@ -2,7 +2,9 @@ const express = require("express");
 const app = express();
 const connect = require("./connect");
 const cors = require("cors");
-const PORT = 2000;
+const env = require("dotenv");
+env.config();
+const PORT = process.env.PORT;
 
 const teacherRoute = require("./routes/admin/teacher");
 const studentRoute = require("./routes/student");
