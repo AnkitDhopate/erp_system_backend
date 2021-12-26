@@ -34,13 +34,9 @@ exports.teacherSignin = (req, res) => {
       if (result) {
         const user = await bcrypt.compare(password, result[0].password);
         if (user) {
-          const token = jwt.sign(
-            { _id: result[0]._id },
-            "this-is-secrete-key-store-it-in-.env",
-            {
-              expiresIn: "1d",
-            }
-          );
+          const token = jwt.sign({ _id: result[0]._id }, process.env.JWT_KEY, {
+            expiresIn: "1d",
+          });
           const { _id, name, email, contact, username, role, branch } =
             result[0];
 
@@ -103,7 +99,7 @@ exports.deleteTeacherData = async (req, res) => {
 };
 
 exports.editTeacherData = async (req, res) => {
-  const { tech_id, name, email,branch, contact } = req.body;
+  const { tech_id, name, email, branch, contact } = req.body;
 
   express.db.query(
     `UPDATE teacher SET name="${name}", email="${email}", contact="${contact}", branch="${branch}" WHERE _id = ${tech_id} `,

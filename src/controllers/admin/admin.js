@@ -1,6 +1,8 @@
 const bcrypt = require("bcrypt");
 const express = require("../../connect");
 const jwt = require("jsonwebtoken");
+const env = require("dotenv");
+env.config();
 
 exports.adminRegister = async (req, res) => {
   const { name, contact, email, username, password } = req.body;
@@ -30,17 +32,13 @@ exports.adminSignin = (req, res) => {
       if (error || result.length == 0) {
         return res.status(404).json({ error: "No such user found" });
       }
-
+      console.log(process.env.JWT_KEY);
       if (result) {
         const user = await bcrypt.compare(password, result[0].password);
         if (user) {
-          const token = jwt.sign(
-            { _id: result[0]._id },
-            "this-is-secrete-key-store-it-in-.env",
-            {
-              expiresIn: "1d",
-            }
-          );
+          const token = jwt.sign({ _id: result[0]._id }, process.env.JWT_KEY, {
+            expiresIn: "1d",
+          });
           const { _id, name, email, contact, username, role } = result[0];
 
           res.cookie("token", token, { expiresIn: "1d" });

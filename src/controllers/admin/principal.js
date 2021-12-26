@@ -49,13 +49,9 @@ exports.principalSignin = (req, res) => {
       if (result) {
         const user = await bcrypt.compare(password, result[0].password);
         if (user) {
-          const token = jwt.sign(
-            { _id: result[0]._id },
-            "this-is-secrete-key-store-it-in-.env",
-            {
-              expiresIn: "1d",
-            }
-          );
+          const token = jwt.sign({ _id: result[0]._id }, process.env.JWT_KEY, {
+            expiresIn: "1d",
+          });
           const { _id, name, email, contact, username, role } = result[0];
 
           res.cookie("token", token, { expiresIn: "1d" });
@@ -83,7 +79,6 @@ exports.principalSignout = (req, res) => {
   res.clearCookie("token");
   res.status(201).json({ message: "Logged out successfully" });
 };
-
 
 exports.getAllPrincipalData = async (req, res) => {
   express.db.query("SELECT * FROM principal", async (err, result) => {
@@ -117,7 +112,7 @@ exports.deletePrincipalData = async (req, res) => {
 };
 
 exports.editPrincipalData = async (req, res) => {
-  const { pri_id, name, email, contact} = req.body;
+  const { pri_id, name, email, contact } = req.body;
 
   express.db.query(
     `UPDATE principal SET name="${name}", email="${email}", contact="${contact}" WHERE _id = ${pri_id} `,
