@@ -10,10 +10,11 @@ const {
   studentSignout,
 } = require("../controllers/student");
 const { requireSignIn } = require("../middlewares/middleware");
+const { validateSignupRequest, isRequestValidated, validateSigninRequest } = require("../Validators/validators");
 const router = express.Router();
 
-router.post("/register", requireSignIn, studentRegister);
-router.post("/signin", studentSignin);
+router.post("/register", validateSignupRequest, isRequestValidated, requireSignIn, studentRegister);
+router.post("/signin", validateSigninRequest, isRequestValidated, studentSignin);
 router.post("/signout", studentSignout);
 router.delete("/delete-student/:_id", requireSignIn, deleteStudentData);
 router.put("/edit-student-data", requireSignIn, editStudentData);
