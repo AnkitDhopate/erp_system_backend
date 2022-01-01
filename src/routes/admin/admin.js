@@ -3,6 +3,7 @@ const {
   deleteAdminData,
   editAdminData,
   getAllAdminData,
+  verifyToken,
 } = require("../../controllers/admin/admin");
 const {
   adminRegister,
@@ -18,5 +19,6 @@ router.post("/signout", adminSignout);
 router.delete("/delete-admin/:_id", requireSignIn, deleteAdminData);
 router.put("/edit-admin-data", requireSignIn, editAdminData);
 router.get("/get-all-admin-data", requireSignIn, getAllAdminData);
+router.post("/authentication/verify-token", verifyToken);
 
 module.exports = router;
