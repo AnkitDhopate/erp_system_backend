@@ -6,7 +6,7 @@ const mailgun = require("mailgun-js");
 
 env.config();
 
-const DOMAIN = "sandbox8ac53da53800490e8cc3d61f64163e1c.mailgun.org";
+const DOMAIN = process.env.MAILGUN_DOMAIN;
 const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN });
 
 exports.adminRegister = async (req, res) => {
