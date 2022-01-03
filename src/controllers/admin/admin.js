@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const express = require("../../connect");
 const jwt = require("jsonwebtoken");
+const _ = require("lodash");
 const env = require("dotenv");
 const mailgun = require("mailgun-js");
 
@@ -40,6 +41,7 @@ exports.adminRegister = async (req, res) => {
         };
 
         mg.messages().send(data, function (error, body) {
+          console.log(body);
           if (error) {
             return res.status(400).json({ error: error.message });
           }
@@ -85,6 +87,7 @@ exports.verifyToken = (req, res) => {
     return res.status(400).json({ error: "Something went wrong" });
   }
 };
+
 
 exports.adminSignin = (req, res) => {
   const { username, password } = req.body;

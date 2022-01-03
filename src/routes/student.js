@@ -3,6 +3,7 @@ const {
   deleteStudentData,
   editStudentData,
   getAllStudentData,
+  verifyToken,
 } = require("../controllers/student");
 const {
   studentRegister,
@@ -19,5 +20,6 @@ router.post("/signout", studentSignout);
 router.delete("/delete-student/:_id", requireSignIn, deleteStudentData);
 router.put("/edit-student-data", requireSignIn, editStudentData);
 router.get("/get-all-student-data", requireSignIn, getAllStudentData);
+router.post("/authentication/verify-token", verifyToken);
 
 module.exports = router;

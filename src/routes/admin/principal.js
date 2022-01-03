@@ -3,6 +3,7 @@ const {
   deletePrincipalData,
   editPrincipalData,
   getAllPrincipalData,
+  verifyToken,
 } = require("../../controllers/admin/principal");
 const {
   principalRegister,
@@ -19,5 +20,6 @@ router.post("/signout", principalSignout);
 router.delete("/delete-principal/:_id", requireSignIn, deletePrincipalData);
 router.put("/edit-principal-data", requireSignIn, editPrincipalData);
 router.get("/get-all-principal-data", requireSignIn, getAllPrincipalData);
+router.post("/authentication/verify-token", verifyToken);
 
 module.exports = router;

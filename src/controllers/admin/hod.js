@@ -1,40 +1,106 @@
 const bcrypt = require("bcrypt");
 const express = require("../../connect");
 const jwt = require("jsonwebtoken");
+const env = require("dotenv");
+const mailgun = require("mailgun-js");
+
+env.config();
+
+const DOMAIN = process.env.MAILGUN_DOMAIN;
+const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN });
 
 exports.hodRegister = async (req, res) => {
   const { name, contact, email, branch, username, password } = req.body;
-  const hash_password = await bcrypt.hash(password, 10);
 
-  const hod_exist_check = await express.db.query(
-    "SELECT * FROM hod where branch = ?",
-    [branch],
-    async (error, hod) => {
-      if (error) {
+  const checkUser = await express.db.query(
+    "SELECT * FROM hod WHERE username = ?",
+    [username],
+    (err, result) => {
+      if (err) {
         return res.status(400).json({ err });
       }
 
-      if (hod.length === 0) {
-        const temp = await express.db.query(
-          "INSERT INTO hod(name, contact,branch, email, username, password) VALUES (?, ?, ?, ?, ?,?)",
-          [name, contact, branch, email, username, hash_password],
-          (err, result) => {
-            if (err) {
-              return res.status(400).json({ err });
-            }
-
-            if (result) {
-              return res.status(201).json({ result });
-            }
-          }
-        );
+      if (result.length > 0) {
+        return res.status(400).json({ error: "Username already exists" });
       } else {
-        return res.status(203).json({
-          error: `Hod has already been appointed for ${branch} Branch`,
+        const registerToken = jwt.sign(
+          { name, contact, branch, email, username, password },
+          process.env.JWT_REGISTER_KEY,
+          { expiresIn: "20m" }
+        );
+
+        const data = {
+          from: "noreply@hello.com",
+          to: email,
+          subject: "ERP System Account activation",
+          html: `
+            <h2>Please click below link for activation</h2>
+            <a href=${process.env.CLIENT_URL}/authentication/activate/${registerToken}>${process.env.CLIENT_URL}/authentication/verify-token/${registerToken}</a>
+          `,
+        };
+
+        mg.messages().send(data, function (error, body) {
+          if (error) {
+            return res.status(400).json({ error: error.message });
+          }
+
+          return res.status(201).json({
+            message:
+              "Email has been sent successfully, kindly activate your account",
+          });
         });
       }
     }
   );
+};
+
+exports.verifyToken = (req, res) => {
+  const { token } = req.body;
+  if (token) {
+    jwt.verify(token, process.env.JWT_REGISTER_KEY, async (error, result) => {
+      if (error) {
+        return res.status(400).json({ error });
+      }
+
+      if (result) {
+        console.log(result);
+        const { name, contact, email, branch, username, password } = result;
+        const hash_password = await bcrypt.hash(password, 10);
+
+        const hod_exist_check = await express.db.query(
+          "SELECT * FROM hod where branch = ?",
+          [branch],
+          async (error, hod) => {
+            if (error) {
+              return res.status(400).json({ err });
+            }
+
+            if (hod.length === 0) {
+              const temp = await express.db.query(
+                "INSERT INTO hod(name, contact,branch, email, username, password) VALUES (?, ?, ?, ?, ?,?)",
+                [name, contact, branch, email, username, hash_password],
+                (err, result) => {
+                  if (err) {
+                    return res.status(400).json({ err });
+                  }
+
+                  if (result) {
+                    return res.status(201).json({ result });
+                  }
+                }
+              );
+            } else {
+              return res.status(203).json({
+                error: `Hod has already been appointed for ${branch} Branch`,
+              });
+            }
+          }
+        );
+      };
+    });
+  } else {
+    return res.status(400).json({ error: "Something went wrong" });
+  }
 };
 
 exports.hodSignin = (req, res) => {

@@ -3,6 +3,7 @@ const {
   deleteHodData,
   editHodData,
   getAllHodData,
+  verifyToken,
 } = require("../../controllers/admin/hod");
 const {
   hodRegister,
@@ -19,6 +20,6 @@ router.post("/signout", hodSignout);
 router.delete("/delete-hod/:_id", requireSignIn, deleteHodData);
 router.put("/edit-hod-data", requireSignIn, editHodData);
 router.get("/get-all-hod-data", requireSignIn, getAllHodData);
-
+router.post("/authentication/verify-token", verifyToken);
 
 module.exports = router;
