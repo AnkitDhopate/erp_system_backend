@@ -11,7 +11,7 @@ const DOMAIN = process.env.MAILGUN_DOMAIN;
 const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN });
 
 exports.adminRegister = async (req, res) => {
-  const { name, contact, email, username, password } = req.body;
+  const { name, contact, email, username, password, resetLink } = req.body;
 
   const checkUser = await express.db.query(
     "SELECT * FROM admin WHERE username = ?",
@@ -25,7 +25,7 @@ exports.adminRegister = async (req, res) => {
         return res.status(400).json({ error: "Username already exists" });
       } else {
         const registerToken = jwt.sign(
-          { name, contact, email, username, password },
+          { name, contact, email, username, password, resetLink },
           process.env.JWT_REGISTER_KEY,
           { expiresIn: "20m" }
         );
@@ -65,12 +65,12 @@ exports.verifyToken = (req, res) => {
       }
 
       if (result) {
-        const { name, contact, email, username, password } = result;
+        const { name, contact, email, username, password, resetLink } = result;
         const hash_password = await bcrypt.hash(password, 10);
 
         const temp = await express.db.query(
-          "INSERT INTO admin(name, contact, email, username, password) VALUES (?, ?, ?, ?, ?)",
-          [name, contact, email, username, hash_password],
+          "INSERT INTO admin(name, contact, email, username, password, resetLink) VALUES (?, ?, ?, ?, ?, ?)",
+          [name, contact, email, username, hash_password, resetLink],
           (err, result) => {
             if (err) {
               return res.status(400).json({ err });
