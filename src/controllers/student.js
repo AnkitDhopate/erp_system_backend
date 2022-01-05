@@ -10,7 +10,8 @@ const DOMAIN = process.env.MAILGUN_DOMAIN;
 const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN });
 
 exports.studentRegister = async (req, res) => {
-  const { name, contact, email, username, roll_no, branch, dob, password } = req.body;
+  const { name, contact, email, username, roll_no, branch, dob, password } =
+    req.body;
 
   const checkUser = await express.db.query(
     "SELECT * FROM students WHERE username = ?",
@@ -63,8 +64,16 @@ exports.verifyToken = (req, res) => {
       }
 
       if (result) {
-        const { name, contact, email, username, roll_no, branch, dob, password } =
-          result;
+        const {
+          name,
+          contact,
+          email,
+          username,
+          roll_no,
+          branch,
+          dob,
+          password,
+        } = result;
         const hash_password = await bcrypt.hash(password, 10);
         const data = express.db;
         const temp = await data.query(
@@ -79,7 +88,7 @@ exports.verifyToken = (req, res) => {
             }
           }
         );
-      };
+      }
     });
   } else {
     return res.status(400).json({ error: "Something went wrong" });
