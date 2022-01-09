@@ -3,6 +3,7 @@ const express = require("../../connect");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
 const env = require("dotenv");
+var nodemailer = require("nodemailer");
 const mailgun = require("mailgun-js");
 
 env.config();
@@ -117,7 +118,6 @@ exports.adminSignin = (req, res) => {
       if (error || result.length == 0) {
         return res.status(404).json({ error: "No such user found" });
       }
-      console.log(process.env.JWT_KEY);
       if (result) {
         const user = await bcrypt.compare(password, result[0].password);
         if (user) {
@@ -197,6 +197,122 @@ exports.editAdminData = async (req, res) => {
         return res.status(201).json({ result });
       }
       console.log(result);
+    }
+  );
+};
+
+exports.forgotPassword = (req, res) => {
+  const { email } = req.body;
+
+  const checkUser = express.db.query(
+    `SELECT * FROM admin WHERE email = ?`,
+    [email],
+    async (error, user) => {
+      if (error) {
+        return res.status(400).json({ error });
+      }
+
+      if (user.length == 0) {
+        return res.status(400).json({ error: "no such user found" });
+      }
+
+      const otpcode = Math.floor(Math.random() * 10000 + 1);
+
+      const otp_data = await express.db.query(
+        `INSERT INTO otp(email, otp, expires_in) VALUES (?, ?, ?)`,
+        [email, otpcode, new Date().getTime() + 600000],
+        async (e, r) => {
+          if (e) {
+            return res.status(400).json({ e });
+          } else {
+            mailer(email, otpcode);
+            return res
+              .status(201)
+              .json({ message: "OTP successfully sent to your email" });
+          }
+        }
+      );
+    }
+  );
+};
+
+const mailer = (email, otp) => {
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    port: 587,
+    source: false,
+    auth: {
+      user: "mailid.erpas@gmail.com",
+      pass: "ankit@swap",
+    },
+  });
+
+  var mailOptions = {
+    from: "mailid.erpas@gmail.com",
+    to: email,
+    subject: "Forgot Password OTP request",
+    html: `
+    <h3>The OTP is</h3>
+    <p>${otp}</p>
+    `,
+  };
+
+  transporter.sendMail(mailOptions, (e, i) => {
+    if (e) {
+      console.log(e);
+    } else {
+      console.log("Successfully sent mail");
+    }
+  });
+};
+
+exports.resetPassword = (req, res) => {
+  const { email, otp, new_password } = req.body;
+
+  const checkOTP_Email = express.db.query(
+    `SELECT * FROM otp WHERE email = ?`,
+    [email],
+    async (error, item) => {
+      if (error) {
+        return res.status(401).json({ error });
+      } else {
+        const currentTime = new Date().getTime();
+        const diff = item[0].expires_in - currentTime;
+
+        if (diff < 0) {
+          return res.status(400).json({ error: "OTP expried" });
+        } else {
+          if (otp !== item[0].otp) {
+            return res.status(401).json({ error: "Incorrect OTP" });
+          } else {
+            const hash_password = await bcrypt.hash(new_password, 10);
+            const updatePass = express.db.query(
+              `UPDATE admin
+            SET password = ?
+            WHERE email = ?;`,
+              [hash_password, email],
+              async (e, r) => {
+                if (e) {
+                  return res.status(401).json({ e });
+                } else {
+                  const deleteOTP = await express.db.query(
+                    `DELETE FROM otp WHERE email = ?;`,
+                    [email],
+                    (ee, dd) => {
+                      if (ee) {
+                        console.log("error while deleting otp");
+                      }
+                    }
+                  );
+                  return res
+                    .status(201)
+                    .json({ message: "Password updated successfully" });
+                }
+              }
+            );
+          }
+        }
+      }
     }
   );
 };
