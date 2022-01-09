@@ -3,6 +3,7 @@ const express = require("../../connect");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
 const env = require("dotenv");
+var nodemailer = require("nodemailer");
 const mailgun = require("mailgun-js");
 
 env.config();
@@ -117,7 +118,6 @@ exports.adminSignin = (req, res) => {
       if (error || result.length == 0) {
         return res.status(404).json({ error: "No such user found" });
       }
-      console.log(process.env.JWT_KEY);
       if (result) {
         const user = await bcrypt.compare(password, result[0].password);
         if (user) {
@@ -201,93 +201,118 @@ exports.editAdminData = async (req, res) => {
   );
 };
 
-exports.forgotPassword = async (req, res) => {
+exports.forgotPassword = (req, res) => {
   const { email } = req.body;
 
-  const checkUser = await express.db.query(
-    "SELECT * FROM admin WHERE email = ?",
+  const checkUser = express.db.query(
+    `SELECT * FROM admin WHERE email = ?`,
     [email],
     async (error, user) => {
-      if (error || !user) {
+      if (error) {
         return res.status(400).json({ error });
       }
 
-      const forgotPassToken = jwt.sign(
-        { email },
-        process.env.RESET_PASSWORD_KEY,
-        { expiresIn: "20m" }
-      );
+      if (user.length == 0) {
+        return res.status(400).json({ error: "no such user found" });
+      }
 
-      const data = {
-        from: "noreply@hello.com",
-        to: email,
-        subject: "ERP Forgot Password Reset Link",
-        html: `
-            <h2>Please click below link to reset your password</h2>
-            <p>${process.env.CLIENT_URL}/resetpassword/${forgotPassToken}</p>
-          `,
-      };
+      const otpcode = Math.floor(Math.random() * 10000 + 1);
 
-      const updateResetLinkCol = await express.db.query(
-        `UPDATE admin SET resetLink=? WHERE email = ?`,
-        [forgotPassToken, email],
-        (err, result) => {
-          if (err) {
-            return res.status(400).json({ error });
+      const otp_data = await express.db.query(
+        `INSERT INTO otp(email, otp, expires_in) VALUES (?, ?, ?)`,
+        [email, otpcode, new Date().getTime() + 600000],
+        async (e, r) => {
+          if (e) {
+            return res.status(400).json({ e });
+          } else {
+            mailer(email, otpcode);
+            return res
+              .status(201)
+              .json({ message: "OTP successfully sent to your email" });
           }
-
-          mg.messages().send(data, (e, body) => {
-            if (e) {
-              return res.status(400).json({ error: e });
-            }
-
-            return res.status(200).json({
-              message: "Email has been sent, kindly follow the instructions",
-            });
-          });
         }
       );
     }
   );
 };
 
-exports.resetPassword = (req, res) => {
-  const { token, newPassword } = req.body;
-
-  jwt.verify(token, process.env.RESET_PASSWORD_KEY, async (error, result) => {
-    if (error) {
-      return res.status(400).json({ error });
-    }
-
-    const checkResetLinkStatus = await express.db.query(
-      `SELECT resetLink FROM admin WHERE email = ?`,
-      [result.email],
-      async (err, resetLinkStat) => {
-        if (err) {
-          return res.status(400).json({ err });
-        }
-
-        if (resetLinkStat.length <= 0) {
-          return res.status(400).json({
-            error:
-              "User not requested to forgot password. You are fucking hacker",
-          });
-        }
-
-        const hash_password = await bcrypt.hash(newPassword, 10);
-
-        const updateUser = await express.db.query(
-          `UPDATE admin SET resetLink = '', password = ? WHERE email = ?`,
-          [hash_password, result.email],
-          (e, d) => {
-            if (e) {
-              return res.status(400).json({ err });
-            }
-
-            return res.status(200).json({ msg: "Password Updated" });
-          }
-        );
-      }
-    );
+const mailer = (email, otp) => {
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    port: 587,
+    source: false,
+    auth: {
+      user: "mailid.erpas@gmail.com",
+      pass: "ankit@swap",
+    },
   });
+
+  var mailOptions = {
+    from: "mailid.erpas@gmail.com",
+    to: email,
+    subject: "Forgot Password OTP request",
+    html: `
+    <h3>The OTP is</h3>
+    <p>${otp}</p>
+    `,
+  };
+
+  transporter.sendMail(mailOptions, (e, i) => {
+    if (e) {
+      console.log(e);
+    } else {
+      console.log("Successfully sent mail");
+    }
+  });
+};
+
+exports.resetPassword = (req, res) => {
+  const { email, otp, new_password } = req.body;
+
+  const checkOTP_Email = express.db.query(
+    `SELECT * FROM otp WHERE email = ?`,
+    [email],
+    async (error, item) => {
+      if (error) {
+        return res.status(401).json({ error });
+      } else {
+        const currentTime = new Date().getTime();
+        const diff = item[0].expires_in - currentTime;
+
+        if (diff < 0) {
+          return res.status(400).json({ error: "OTP expried" });
+        } else {
+          if (otp !== item[0].otp) {
+            return res.status(401).json({ error: "Incorrect OTP" });
+          } else {
+            const hash_password = await bcrypt.hash(new_password, 10);
+            const updatePass = express.db.query(
+              `UPDATE admin
+            SET password = ?
+            WHERE email = ?;`,
+              [hash_password, email],
+              async (e, r) => {
+                if (e) {
+                  return res.status(401).json({ e });
+                } else {
+                  const deleteOTP = await express.db.query(
+                    `DELETE FROM otp WHERE email = ?;`,
+                    [email],
+                    (ee, dd) => {
+                      if (ee) {
+                        console.log("error while deleting otp");
+                      }
+                    }
+                  );
+                  return res
+                    .status(201)
+                    .json({ message: "Password updated successfully" });
+                }
+              }
+            );
+          }
+        }
+      }
+    }
+  );
 };
