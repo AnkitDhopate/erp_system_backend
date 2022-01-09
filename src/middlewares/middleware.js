@@ -1,4 +1,6 @@
 const jwt = require("jsonwebtoken");
+const multer = require("multer");
+const shortid = require("shortid");
 
 exports.requireSignIn = (req, res, next) => {
   if (req.headers.authorization) {
@@ -10,6 +12,17 @@ exports.requireSignIn = (req, res, next) => {
   }
   next();
 };
+
+const storage = multer.diskStorage({
+  destination: function (res, file, cb) {
+    cb(null, "uploads");
+  },
+  filename: function (req, file, cb) {
+    cb(null, shortid.generate() + "-" + file.originalname);
+  },
+});
+
+exports.upload = multer({ storage });
 
 // exports.adminMiddleware = (req, res, next) => {
 //   if (req.user.role !== "admin") {

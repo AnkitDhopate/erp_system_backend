@@ -12,7 +12,7 @@ const {
   adminSignin,
   adminSignout,
 } = require("../../controllers/admin/admin");
-const { requireSignIn } = require("../../middlewares/middleware");
+const { requireSignIn, upload } = require("../../middlewares/middleware");
 const {
   isRequestValidated,
   validateSigninRequest,
@@ -22,6 +22,7 @@ const router = express.Router();
 
 router.post(
   "/register",
+  upload.single("profile_pic"),
   validateSignupRequestAdmin,
   isRequestValidated,
   requireSignIn,
