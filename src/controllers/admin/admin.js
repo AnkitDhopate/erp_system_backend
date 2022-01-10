@@ -12,6 +12,7 @@ const DOMAIN = process.env.MAILGUN_DOMAIN;
 const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN });
 
 exports.adminRegister = async (req, res) => {
+  console.log(req);
   const { name, contact, email, username, password } = req.body;
   const profile_pic = process.env.CLIENT_URL + "/public/" + req.file.filename;
   const hash_password = await bcrypt.hash(password, 10);

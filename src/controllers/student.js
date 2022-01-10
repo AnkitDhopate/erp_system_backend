@@ -1,99 +1,126 @@
 const bcrypt = require("bcrypt");
 const express = require("../connect");
 const jwt = require("jsonwebtoken");
+const _ = require("lodash");
 const env = require("dotenv");
 const mailgun = require("mailgun-js");
+
 
 env.config();
 
 const DOMAIN = process.env.MAILGUN_DOMAIN;
 const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN });
 
+
 exports.studentRegister = async (req, res) => {
   const { name, contact, email, username, roll_no, branch, dob, password } =
     req.body;
-
-  const checkUser = await express.db.query(
-    "SELECT * FROM students WHERE username = ?",
-    [username],
+    const profile_pic = process.env.CLIENT_URL + "/public/" + req.file.filename;
+  const hash_password = await bcrypt.hash(password, 10);
+  const data = express.db;
+  const temp = await data.query(
+    "INSERT INTO students(name, email,username, contact,roll_no, branch, dob, password, profile_pic) VALUES (?,?,?,?,?,?,?,?,?)",
+    [name, email, username, contact, roll_no, branch, dob, hash_password, profile_pic],
     (err, result) => {
       if (err) {
         return res.status(400).json({ err });
       }
-
-      if (result.length > 0) {
-        return res.status(400).json({ error: "Username already exists" });
-      } else {
-        const registerToken = jwt.sign(
-          { name, contact, email, username, roll_no, branch, dob, password },
-          process.env.JWT_REGISTER_KEY,
-          { expiresIn: "20m" }
-        );
-
-        const data = {
-          from: "noreply@hello.com",
-          to: email,
-          subject: "ERP System Account activation",
-          html: `
-            <h2>Please click below link for activation</h2>
-            <a href=${process.env.CLIENT_URL}/authentication/activate/${registerToken}>${process.env.CLIENT_URL}/authentication/verify-token/${registerToken}</a>
-          `,
-        };
-
-        mg.messages().send(data, function (error, body) {
-          if (error) {
-            return res.status(400).json({ error: error.message });
-          }
-
-          return res.status(201).json({
-            message:
-              "Email has been sent successfully, kindly activate your account",
-          });
-        });
+      if (result) {
+        return res.status(201).json({ result });
       }
     }
   );
 };
 
-exports.verifyToken = (req, res) => {
-  const { token } = req.body;
-  if (token) {
-    jwt.verify(token, process.env.JWT_REGISTER_KEY, async (error, result) => {
-      if (error) {
-        return res.status(400).json({ error });
-      }
 
-      if (result) {
-        const {
-          name,
-          contact,
-          email,
-          username,
-          roll_no,
-          branch,
-          dob,
-          password,
-        } = result;
-        const hash_password = await bcrypt.hash(password, 10);
-        const data = express.db;
-        const temp = await data.query(
-          "INSERT INTO students(name, email,username, contact,roll_no, branch, dob, password) VALUES (?,?,?,?,?,?,?,?)",
-          [name, email, username, contact, roll_no, branch, dob, hash_password],
-          (err, result) => {
-            if (err) {
-              return res.status(400).json({ err });
-            }
-            if (result) {
-              return res.status(201).json({ result });
-            }
-          }
-        );
-      }
-    });
-  } else {
-    return res.status(400).json({ error: "Something went wrong" });
-  }
-};
+// exports.studentRegister = async (req, res) => {
+//   const { name, contact, email, username, roll_no, branch, dob, password } =
+//     req.body;
+
+//   const checkUser = await express.db.query(
+//     "SELECT * FROM students WHERE username = ?",
+//     [username],
+//     (err, result) => {
+//       if (err) {
+//         return res.status(400).json({ err });
+//       }
+
+//       if (result.length > 0) {
+//         return res.status(400).json({ error: "Username already exists" });
+//       } else {
+//         const registerToken = jwt.sign(
+//           { name, contact, email, username, roll_no, branch, dob, password },
+//           process.env.JWT_REGISTER_KEY,
+//           { expiresIn: "20m" }
+//         );
+
+//         const data = {
+//           from: "noreply@hello.com",
+//           to: email,
+//           subject: "ERP System Account activation",
+//           html: `
+//             <h2>Please click below link for activation</h2>
+//             <a href=${process.env.CLIENT_URL}/authentication/activate/${registerToken}>${process.env.CLIENT_URL}/authentication/verify-token/${registerToken}</a>
+//           `,
+//         };
+
+//         mg.messages().send(data, function (error, body) {
+//           if (error) {
+//             return res.status(400).json({ error: error.message });
+//           }
+
+//           return res.status(201).json({
+//             message:
+//               "Email has been sent successfully, kindly activate your account",
+//           });
+//         });
+//       }
+//     }
+//   );
+// };
+
+// exports.verifyToken = (req, res) => {
+//   const { token } = req.body;
+//   if (token) {
+//     jwt.verify(token, process.env.JWT_REGISTER_KEY, async (error, result) => {
+//       if (error) {
+//         return res.status(400).json({ error });
+//       }
+
+//       if (result) {
+//         const {
+//           name,
+//           contact,
+//           email,
+//           username,
+//           roll_no,
+//           branch,
+//           dob,
+//           password,
+//         } = result;
+//         const hash_password = await bcrypt.hash(password, 10);
+//         const data = express.db;
+//         const temp = await data.query(
+//           "INSERT INTO students(name, email,username, contact,roll_no, branch, dob, password) VALUES (?,?,?,?,?,?,?,?)",
+//           [name, email, username, contact, roll_no, branch, dob, hash_password],
+//           (err, result) => {
+//             if (err) {
+//               return res.status(400).json({ err });
+//             }
+//             if (result) {
+//               return res.status(201).json({ result });
+//             }
+//           }
+//         );
+//       }
+//     });
+//   } else {
+//     return res.status(400).json({ error: "Something went wrong" });
+//   }
+// };
+
+
+
 
 exports.studentSignin = async (req, res) => {
   const { username, password } = req.body;
