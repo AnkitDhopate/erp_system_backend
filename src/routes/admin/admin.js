@@ -4,8 +4,8 @@ const {
   editAdminData,
   getAllAdminData,
   // verifyToken,
-  // forgotPassword,
-  // resetPassword,
+  forgotPassword,
+  resetPassword,
 } = require("../../controllers/admin/admin");
 const {
   adminRegister,
@@ -33,8 +33,7 @@ router.post("/signout", adminSignout);
 router.delete("/delete-admin/:_id", requireSignIn, deleteAdminData);
 router.put("/edit-admin-data", requireSignIn, editAdminData);
 router.get("/get-all-admin-data", requireSignIn, getAllAdminData);
-// router.post("/authentication/verify-token", verifyToken);
-// router.post("/forgot-password", forgotPassword);
-// router.put("/reset-password", resetPassword);
+router.post("/forgot-password", forgotPassword);
+router.put("/reset-password", resetPassword);
 
 module.exports = router;
