@@ -5,22 +5,30 @@ const _ = require("lodash");
 const env = require("dotenv");
 const mailgun = require("mailgun-js");
 
-
 env.config();
 
 const DOMAIN = process.env.MAILGUN_DOMAIN;
 const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN });
 
-
 exports.studentRegister = async (req, res) => {
   const { name, contact, email, username, roll_no, branch, dob, password } =
     req.body;
-    const profile_pic = process.env.CLIENT_URL + "/public/" + req.file.filename;
+  const profile_pic = process.env.CLIENT_URL + "/public/" + req.file.filename;
   const hash_password = await bcrypt.hash(password, 10);
   const data = express.db;
   const temp = await data.query(
     "INSERT INTO students(name, email,username, contact,roll_no, branch, dob, password, profile_pic) VALUES (?,?,?,?,?,?,?,?,?)",
-    [name, email, username, contact, roll_no, branch, dob, hash_password, profile_pic],
+    [
+      name,
+      email,
+      username,
+      contact,
+      roll_no,
+      branch,
+      dob,
+      hash_password,
+      profile_pic,
+    ],
     (err, result) => {
       if (err) {
         return res.status(400).json({ err });
@@ -31,7 +39,6 @@ exports.studentRegister = async (req, res) => {
     }
   );
 };
-
 
 // exports.studentRegister = async (req, res) => {
 //   const { name, contact, email, username, roll_no, branch, dob, password } =
@@ -119,9 +126,6 @@ exports.studentRegister = async (req, res) => {
 //   }
 // };
 
-
-
-
 exports.studentSignin = async (req, res) => {
   const { username, password } = req.body;
   express.db.query(
@@ -148,6 +152,7 @@ exports.studentSignin = async (req, res) => {
             roll_no,
             branch,
             dob,
+            profile_pic,
           } = result[0];
 
           res.cookie("token", token, { expiresIn: "1d" });
@@ -163,6 +168,7 @@ exports.studentSignin = async (req, res) => {
               roll_no,
               branch,
               dob,
+              profile_pic,
             },
           });
         } else {
