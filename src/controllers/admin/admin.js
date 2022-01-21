@@ -4,12 +4,10 @@ const jwt = require("jsonwebtoken");
 const _ = require("lodash");
 const env = require("dotenv");
 var nodemailer = require("nodemailer");
-const mailgun = require("mailgun-js");
+
 
 env.config();
 
-const DOMAIN = process.env.MAILGUN_DOMAIN;
-const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN });
 
 exports.adminRegister = async (req, res) => {
   console.log(req);
@@ -32,83 +30,6 @@ exports.adminRegister = async (req, res) => {
   );
 };
 
-// exports.adminRegister = async (req, res) => {
-//   const { name, contact, email, username, password } = req.body;
-
-//   const checkUser = await express.db.query(
-//     "SELECT * FROM admin WHERE username = ?",
-//     [username],
-//     (error, result) => {
-//       if (error) {
-//         return res.status(400).json({ error });
-//       }
-
-//       if (result.length > 0) {
-//         return res.status(400).json({ error: "Username already exists" });
-//       } else {
-//         const registerToken = jwt.sign(
-//           { name, contact, email, username, password },
-//           process.env.JWT_REGISTER_KEY,
-//           { expiresIn: "20m" }
-//         );
-
-//         const data = {
-//           from: "noreply@hello.com",
-//           to: email,
-//           subject: "ERP System Account activation",
-//           html: `
-//             <h2>Please click below link for activation</h2>
-//             <a href=${process.env.CLIENT_URL}/authentication/activate/${registerToken}>${process.env.CLIENT_URL}/authentication/verify-token/${registerToken}</a>
-//           `,
-//         };
-
-//         mg.messages().send(data, function (error, body) {
-//           console.log(body);
-//           if (error) {
-//             return res.status(400).json({ error: error.message });
-//           }
-
-//           return res.status(201).json({
-//             message:
-//               "Email has been sent successfully, kindly activate your account",
-//           });
-//         });
-//       }
-//     }
-//   );
-// };
-
-exports.verifyToken = (req, res) => {
-  const { token } = req.body;
-  if (token) {
-    jwt.verify(token, process.env.JWT_REGISTER_KEY, async (error, result) => {
-      if (error) {
-        return res.status(400).json({ error });
-      }
-
-      if (result) {
-        const { name, contact, email, username, password } = result;
-        const hash_password = await bcrypt.hash(password, 10);
-
-        const temp = await express.db.query(
-          "INSERT INTO admin(name, contact, email, username, password) VALUES (?, ?, ?, ?, ?)",
-          [name, contact, email, username, hash_password],
-          (err, result) => {
-            if (err) {
-              return res.status(400).json({ err });
-            }
-
-            if (result) {
-              return res.status(201).json({ result });
-            }
-          }
-        );
-      }
-    });
-  } else {
-    return res.status(400).json({ error: "Something went wrong" });
-  }
-};
 
 exports.adminSignin = (req, res) => {
   const { username, password } = req.body;
@@ -125,7 +46,7 @@ exports.adminSignin = (req, res) => {
           const token = jwt.sign({ _id: result[0]._id }, process.env.JWT_KEY, {
             expiresIn: "1d",
           });
-          const { _id, name, email, contact, username, role } = result[0];
+          const { _id, name, email, contact, username, role, profile_pic } = result[0];
 
           res.cookie("token", token, { expiresIn: "1d" });
 
@@ -138,6 +59,7 @@ exports.adminSignin = (req, res) => {
               contact,
               username,
               role,
+              profile_pic
             },
           });
         } else {

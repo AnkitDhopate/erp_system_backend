@@ -3,7 +3,8 @@ const {
   deleteTeacherData,
   editTeacherData,
   getAllTeacherData,
-  // verifyToken,
+  forgotPassword,
+  resetPassword,
 } = require("../../controllers/admin/teacher");
 const {
   teacherRegister,
@@ -20,6 +21,7 @@ router.post("/signout", teacherSignout);
 router.delete("/delete-teacher/:_id", requireSignIn, deleteTeacherData);
 router.put("/edit-teacher-data", requireSignIn, editTeacherData);
 router.get("/get-all-teacher-data", requireSignIn, getAllTeacherData);
-// router.post("/authentication/verify-token", verifyToken);
+router.post("/forgot-password", forgotPassword);
+router.put("/reset-password", resetPassword);
 
 module.exports = router;
