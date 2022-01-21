@@ -3,7 +3,6 @@ const {
   deleteAdminData,
   editAdminData,
   getAllAdminData,
-  // verifyToken,
   forgotPassword,
   resetPassword,
 } = require("../../controllers/admin/admin");
