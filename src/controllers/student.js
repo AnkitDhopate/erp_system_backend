@@ -7,14 +7,12 @@ var nodemailer = require("nodemailer");
 
 env.config();
 
-
 exports.studentRegister = async (req, res) => {
   const { name, contact, email, username, roll_no, branch, dob, password } =
     req.body;
   const profile_pic = process.env.CLIENT_URL + "/public/" + req.file.filename;
   const hash_password = await bcrypt.hash(password, 10);
-  const data = express.db;
-  const temp = await data.query(
+  const temp = await express.db.query(
     "INSERT INTO students(name, email,username, contact,roll_no, branch, dob, password, profile_pic) VALUES (?,?,?,?,?,?,?,?,?)",
     [
       name,
@@ -37,7 +35,6 @@ exports.studentRegister = async (req, res) => {
     }
   );
 };
-
 
 exports.studentSignin = async (req, res) => {
   const { username, password } = req.body;

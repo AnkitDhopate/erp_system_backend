@@ -5,10 +5,7 @@ const _ = require("lodash");
 const env = require("dotenv");
 var nodemailer = require("nodemailer");
 
-
 env.config();
-
-
 
 exports.hodRegister = async (req, res) => {
   const { name, contact, email, branch, username, password } = req.body;
@@ -46,8 +43,6 @@ exports.hodRegister = async (req, res) => {
   );
 };
 
-
-
 exports.hodSignin = (req, res) => {
   const { username, password } = req.body;
   express.db.query(
@@ -64,8 +59,16 @@ exports.hodSignin = (req, res) => {
           const token = jwt.sign({ _id: result[0]._id }, process.env.JWT_KEY, {
             expiresIn: "1d",
           });
-          const { _id, name, email, contact, branch, username, role, profile_pic} =
-            result[0];
+          const {
+            _id,
+            name,
+            email,
+            contact,
+            branch,
+            username,
+            role,
+            profile_pic,
+          } = result[0];
 
           res.cookie("token", token, { expiresIn: "1d" });
 
@@ -79,7 +82,7 @@ exports.hodSignin = (req, res) => {
               branch,
               username,
               role,
-              profile_pic
+              profile_pic,
             },
           });
         } else {
@@ -143,7 +146,6 @@ exports.editHodData = async (req, res) => {
     }
   );
 };
-
 
 exports.forgotPassword = (req, res) => {
   const { email } = req.body;
@@ -220,7 +222,6 @@ exports.resetPassword = (req, res) => {
       if (error) {
         console.log(error);
         return res.status(401).json({ error });
-        
       } else {
         const currentTime = new Date().getTime();
         const diff = item[0].expires_in - currentTime;
@@ -231,7 +232,7 @@ exports.resetPassword = (req, res) => {
           if (otp !== item[0].otp) {
             console.log(item[0].otp);
             console.log(otp);
-            
+
             return res.status(401).json({ error: "Incorrect OTP" });
           } else {
             const hash_password = await bcrypt.hash(new_password, 10);
