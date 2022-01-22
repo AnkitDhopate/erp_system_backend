@@ -5,12 +5,9 @@ const _ = require("lodash");
 const env = require("dotenv");
 var nodemailer = require("nodemailer");
 
-
 env.config();
 
-
 exports.adminRegister = async (req, res) => {
-  console.log(req);
   const { name, contact, email, username, password } = req.body;
   const profile_pic = process.env.CLIENT_URL + "/public/" + req.file.filename;
   const hash_password = await bcrypt.hash(password, 10);
@@ -30,7 +27,6 @@ exports.adminRegister = async (req, res) => {
   );
 };
 
-
 exports.adminSignin = (req, res) => {
   const { username, password } = req.body;
   express.db.query(
@@ -46,7 +42,8 @@ exports.adminSignin = (req, res) => {
           const token = jwt.sign({ _id: result[0]._id }, process.env.JWT_KEY, {
             expiresIn: "1d",
           });
-          const { _id, name, email, contact, username, role, profile_pic } = result[0];
+          const { _id, name, email, contact, username, role, profile_pic } =
+            result[0];
 
           res.cookie("token", token, { expiresIn: "1d" });
 
@@ -59,7 +56,7 @@ exports.adminSignin = (req, res) => {
               contact,
               username,
               role,
-              profile_pic
+              profile_pic,
             },
           });
         } else {
@@ -190,6 +187,7 @@ const mailer = (email, otp) => {
 };
 
 exports.resetPassword = (req, res) => {
+  console.log(req.body);
   const { email, otp, new_password } = req.body;
 
   const checkOTP_Email = express.db.query(
