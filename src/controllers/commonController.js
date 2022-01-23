@@ -381,29 +381,163 @@ exports.signin = (req, res) => {
   }
 };
 
-exports.adminSignout = (req, res) => {
-  res.clearCookie("token");
+exports.Signout = (req, res) => {
+  const { role } = req.params;
+
+  if (role === "admin") {
+    res.clearCookie("token");
   res.status(201).json({ message: "Logged out successfully" });
+
+  } else if (role === "hod") {
+    res.clearCookie("token");
+  res.status(201).json({ message: "Logged out successfully" });
+
+  } else if (role === "principal") {
+    res.clearCookie("token");
+  res.status(201).json({ message: "Logged out successfully" });
+
+  } else if (role === "teacher") {
+    res.clearCookie("token");
+  res.status(201).json({ message: "Logged out successfully" });
+
+  } else if (role === "student") {
+    res.clearCookie("token");
+  res.status(201).json({ message: "Logged out successfully" });
+  
+};
+}
+
+exports.getAllData = async (req, res) => {
+  const { role } = req.params;
+
+  if (role === "admin") {
+    express.db.query("SELECT * FROM admin", async (err, result) => {
+      if (err) {
+        return res.status(400).json({ err });
+      }
+  
+      if (result) {
+        return res.status(201).json({ result });
+      }
+      console.log(result);
+    });
+  } else if (role === "hod") {
+    express.db.query("SELECT * FROM hod", async (err, result) => {
+      if (err) {
+        return res.status(400).json({ err });
+      }
+  
+      if (result) {
+        return res.status(201).json({ result });
+      }
+      console.log(result);
+    });
+  } else if (role === "principal") {
+    express.db.query("SELECT * FROM principal", async (err, result) => {
+      if (err) {
+        return res.status(400).json({ err });
+      }
+  
+      if (result) {
+        return res.status(201).json({ result });
+      }
+      console.log(result);
+    });
+  } else if (role === "teacher") {
+    express.db.query("SELECT * FROM teacher", async (err, result) => {
+      if (err) {
+        return res.status(400).json({ err });
+      }
+  
+      if (result) {
+        return res.status(201).json({ result });
+      }
+      console.log(result);
+    });
+  } else if (role === "student") {
+    express.db.query("SELECT * FROM students", async (err, result) => {
+      if (err) {
+        return res.status(400).json({ err });
+      }
+  
+      if (result) {
+        return res.status(201).json({ result });
+      }
+      console.log(result);
+    });
+};
+  
 };
 
-exports.getAllAdminData = async (req, res) => {
-  express.db.query("SELECT * FROM admin", async (err, result) => {
-    if (err) {
-      return res.status(400).json({ err });
-    }
+exports.deleteData = async (req, res) => {
+  const { role } = req.params;
+  const _id = req.params._id;
 
-    if (result) {
-      return res.status(201).json({ result });
-    }
-    console.log(result);
-  });
-};
-
-exports.deleteAdminData = async (req, res) => {
-  const adm_id = req.params._id;
+  if (role === "admin") {
   express.db.query(
     `DELETE FROM admin where _id = ?`,
-    [adm_id],
+    [_id],
+    async (err, result) => {
+      if (err) {
+        return res.status(400).json({ err });
+      }
+
+      if (result) {
+        return res.status(201).json({ result });
+      }
+      console.log(result);
+    }
+  );
+  } else if (role === "hod") {
+  express.db.query(
+    `DELETE FROM hod where _id = ?`,
+    [_id],
+    async (err, result) => {
+      if (err) {
+        return res.status(400).json({ err });
+      }
+
+      if (result) {
+        return res.status(201).json({ result });
+      }
+      console.log(result);
+    }
+  );
+  } else if (role === "principal") {
+  express.db.query(
+    `DELETE FROM principal where _id = ?`,
+    [_id],
+    async (err, result) => {
+      if (err) {
+        return res.status(400).json({ err });
+      }
+
+      if (result) {
+        return res.status(201).json({ result });
+      }
+      console.log(result);
+    }
+  );
+  } else if (role === "teacher") {
+  express.db.query(
+    `DELETE FROM teacher where _id = ?`,
+    [_id],
+    async (err, result) => {
+      if (err) {
+        return res.status(400).json({ err });
+      }
+
+      if (result) {
+        return res.status(201).json({ result });
+      }
+      console.log(result);
+    }
+  );
+  } else if (role === "student") {
+  express.db.query(
+    `DELETE FROM students where _id = ?`,
+    [_id],
+
     async (err, result) => {
       if (err) {
         return res.status(400).json({ err });
@@ -416,10 +550,14 @@ exports.deleteAdminData = async (req, res) => {
     }
   );
 };
+  
+};
 
-exports.editAdminData = async (req, res) => {
-  const { _id, name, email, contact } = req.body;
+exports.editData = async (req, res) => {
+  const { role } = req.params;
+  const { _id, name, email, contact, roll_no, branch, dob } = req.body;
 
+  if (role === "admin") {
   express.db.query(
     `UPDATE admin SET name="${name}", email="${email}", contact="${contact}" WHERE _id = ${_id} `,
     (err, result) => {
@@ -433,6 +571,65 @@ exports.editAdminData = async (req, res) => {
       console.log(result);
     }
   );
+  } else if (role === "hod") {
+    express.db.query(
+      `UPDATE hod SET name="${name}", email="${email}", contact="${contact}" , branch="${branch}" WHERE _id = ${_id} `,
+      (err, result) => {
+        if (err) {
+          return res.status(400).json({ err });
+        }
+  
+        if (result) {
+          return res.status(201).json({ result });
+        }
+        console.log(result);
+      }
+    );
+  } else if (role === "principal") {
+    express.db.query(
+      `UPDATE principal SET name="${name}", email="${email}", contact="${contact}" WHERE _id = ${_id} `,
+      (err, result) => {
+        if (err) {
+          return res.status(400).json({ err });
+        }
+  
+        if (result) {
+          return res.status(201).json({ result });
+        }
+        console.log(result);
+      }
+    );
+  } else if (role === "teacher") {
+    express.db.query(
+      `UPDATE teacher SET name="${name}", email="${email}", contact="${contact}", branch="${branch}" WHERE _id = ${_id} `,
+      (err, result) => {
+        if (err) {
+          return res.status(400).json({ err });
+        }
+  
+        if (result) {
+          return res.status(201).json({ result });
+        }
+        console.log(result);
+      }
+    );
+  } else if (role === "student") {
+    express.db.query(
+      `UPDATE students SET name="${name}", email="${email}", contact="${contact}", roll_no="${roll_no}", branch="${branch}", dob="${dob}" WHERE _id = ${_id} `,
+  
+      (err, result) => {
+        if (err) {
+          return res.status(400).json({ err });
+        }
+  
+        if (result) {
+          return res.status(201).json({ result });
+        }
+        console.log(result);
+      }
+    );
+};
+  
 };
 
 exports.forgotPassword = (req, res) => {

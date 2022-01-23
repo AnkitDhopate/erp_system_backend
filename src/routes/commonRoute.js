@@ -1,5 +1,5 @@
 const express = require("express");
-const { register, signin } = require("../controllers/commonController");
+const { register, signin, getAllData, Signout, deleteData, editData } = require("../controllers/commonController");
 const { upload, requireSignIn } = require("../middlewares/middleware");
 const {
   validateSignupRequest,
@@ -34,5 +34,9 @@ router.post(
 );
 
 router.post("/:role/signin", validateSigninRequest, isRequestValidated, signin);
+router.post("/:role/signout", Signout);
+router.get("/:role/get-all-data", requireSignIn, getAllData);
+router.delete("/:role/delete-data/:_id", requireSignIn, deleteData);
+router.put("/:role/edit-data", requireSignIn, editData);
 
 module.exports = router;
