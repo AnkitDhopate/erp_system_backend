@@ -382,30 +382,9 @@ exports.signin = (req, res) => {
 };
 
 exports.Signout = (req, res) => {
-  const { role } = req.params;
-
-  if (role === "admin") {
-    res.clearCookie("token");
+  res.clearCookie("token");
   res.status(201).json({ message: "Logged out successfully" });
-
-  } else if (role === "hod") {
-    res.clearCookie("token");
-  res.status(201).json({ message: "Logged out successfully" });
-
-  } else if (role === "principal") {
-    res.clearCookie("token");
-  res.status(201).json({ message: "Logged out successfully" });
-
-  } else if (role === "teacher") {
-    res.clearCookie("token");
-  res.status(201).json({ message: "Logged out successfully" });
-
-  } else if (role === "student") {
-    res.clearCookie("token");
-  res.status(201).json({ message: "Logged out successfully" });
-  
 };
-}
 
 exports.getAllData = async (req, res) => {
   const { role } = req.params;
@@ -415,7 +394,7 @@ exports.getAllData = async (req, res) => {
       if (err) {
         return res.status(400).json({ err });
       }
-  
+
       if (result) {
         return res.status(201).json({ result });
       }
@@ -426,7 +405,7 @@ exports.getAllData = async (req, res) => {
       if (err) {
         return res.status(400).json({ err });
       }
-  
+
       if (result) {
         return res.status(201).json({ result });
       }
@@ -437,7 +416,7 @@ exports.getAllData = async (req, res) => {
       if (err) {
         return res.status(400).json({ err });
       }
-  
+
       if (result) {
         return res.status(201).json({ result });
       }
@@ -448,7 +427,7 @@ exports.getAllData = async (req, res) => {
       if (err) {
         return res.status(400).json({ err });
       }
-  
+
       if (result) {
         return res.status(201).json({ result });
       }
@@ -459,98 +438,95 @@ exports.getAllData = async (req, res) => {
       if (err) {
         return res.status(400).json({ err });
       }
-  
+
       if (result) {
         return res.status(201).json({ result });
       }
       console.log(result);
     });
-};
-  
+  }
 };
 
 exports.deleteData = async (req, res) => {
-  const { role } = req.params;
-  const _id = req.params._id;
+  const { role, _id } = req.params;
 
   if (role === "admin") {
-  express.db.query(
-    `DELETE FROM admin where _id = ?`,
-    [_id],
-    async (err, result) => {
-      if (err) {
-        return res.status(400).json({ err });
-      }
+    express.db.query(
+      `DELETE FROM admin where _id = ?`,
+      [_id],
+      async (err, result) => {
+        if (err) {
+          return res.status(400).json({ err });
+        }
 
-      if (result) {
-        return res.status(201).json({ result });
+        if (result) {
+          return res.status(201).json({ result });
+        }
+        console.log(result);
       }
-      console.log(result);
-    }
-  );
+    );
   } else if (role === "hod") {
-  express.db.query(
-    `DELETE FROM hod where _id = ?`,
-    [_id],
-    async (err, result) => {
-      if (err) {
-        return res.status(400).json({ err });
-      }
+    express.db.query(
+      `DELETE FROM hod where _id = ?`,
+      [_id],
+      async (err, result) => {
+        if (err) {
+          return res.status(400).json({ err });
+        }
 
-      if (result) {
-        return res.status(201).json({ result });
+        if (result) {
+          return res.status(201).json({ result });
+        }
+        console.log(result);
       }
-      console.log(result);
-    }
-  );
+    );
   } else if (role === "principal") {
-  express.db.query(
-    `DELETE FROM principal where _id = ?`,
-    [_id],
-    async (err, result) => {
-      if (err) {
-        return res.status(400).json({ err });
-      }
+    express.db.query(
+      `DELETE FROM principal where _id = ?`,
+      [_id],
+      async (err, result) => {
+        if (err) {
+          return res.status(400).json({ err });
+        }
 
-      if (result) {
-        return res.status(201).json({ result });
+        if (result) {
+          return res.status(201).json({ result });
+        }
+        console.log(result);
       }
-      console.log(result);
-    }
-  );
+    );
   } else if (role === "teacher") {
-  express.db.query(
-    `DELETE FROM teacher where _id = ?`,
-    [_id],
-    async (err, result) => {
-      if (err) {
-        return res.status(400).json({ err });
-      }
+    express.db.query(
+      `DELETE FROM teacher where _id = ?`,
+      [_id],
+      async (err, result) => {
+        if (err) {
+          return res.status(400).json({ err });
+        }
 
-      if (result) {
-        return res.status(201).json({ result });
+        if (result) {
+          return res.status(201).json({ result });
+        }
+        console.log(result);
       }
-      console.log(result);
-    }
-  );
+    );
   } else if (role === "student") {
-  express.db.query(
-    `DELETE FROM students where _id = ?`,
-    [_id],
+    express.db.query(
+      `DELETE FROM students where _id = ?`,
+      [_id],
 
-    async (err, result) => {
-      if (err) {
-        return res.status(400).json({ err });
-      }
+      async (err, result) => {
+        if (err) {
+          return res.status(400).json({ err });
+        }
 
-      if (result) {
-        return res.status(201).json({ result });
+        if (result) {
+          return res.status(201).json({ result });
+        }
+        console.log(result);
       }
-      console.log(result);
-    }
-  );
-};
-  
+    );
+  }
 };
 
 exports.editData = async (req, res) => {
@@ -558,19 +534,19 @@ exports.editData = async (req, res) => {
   const { _id, name, email, contact, roll_no, branch, dob } = req.body;
 
   if (role === "admin") {
-  express.db.query(
-    `UPDATE admin SET name="${name}", email="${email}", contact="${contact}" WHERE _id = ${_id} `,
-    (err, result) => {
-      if (err) {
-        return res.status(400).json({ err });
-      }
+    express.db.query(
+      `UPDATE admin SET name="${name}", email="${email}", contact="${contact}" WHERE _id = ${_id} `,
+      (err, result) => {
+        if (err) {
+          return res.status(400).json({ err });
+        }
 
-      if (result) {
-        return res.status(201).json({ result });
+        if (result) {
+          return res.status(201).json({ result });
+        }
+        console.log(result);
       }
-      console.log(result);
-    }
-  );
+    );
   } else if (role === "hod") {
     express.db.query(
       `UPDATE hod SET name="${name}", email="${email}", contact="${contact}" , branch="${branch}" WHERE _id = ${_id} `,
@@ -578,7 +554,7 @@ exports.editData = async (req, res) => {
         if (err) {
           return res.status(400).json({ err });
         }
-  
+
         if (result) {
           return res.status(201).json({ result });
         }
@@ -592,7 +568,7 @@ exports.editData = async (req, res) => {
         if (err) {
           return res.status(400).json({ err });
         }
-  
+
         if (result) {
           return res.status(201).json({ result });
         }
@@ -606,7 +582,7 @@ exports.editData = async (req, res) => {
         if (err) {
           return res.status(400).json({ err });
         }
-  
+
         if (result) {
           return res.status(201).json({ result });
         }
@@ -616,28 +592,27 @@ exports.editData = async (req, res) => {
   } else if (role === "student") {
     express.db.query(
       `UPDATE students SET name="${name}", email="${email}", contact="${contact}", roll_no="${roll_no}", branch="${branch}", dob="${dob}" WHERE _id = ${_id} `,
-  
+
       (err, result) => {
         if (err) {
           return res.status(400).json({ err });
         }
-  
+
         if (result) {
           return res.status(201).json({ result });
         }
         console.log(result);
       }
     );
-};
-  
+  }
 };
 
 exports.forgotPassword = (req, res) => {
   const { email } = req.body;
 
   const checkUser = express.db.query(
-    `SELECT * FROM admin WHERE email = ?`,
-    [email],
+    `SELECT email, role FROM hod WHERE email=? UNION SELECT email, role FROM admin WHERE email=? UNION SELECT email, role FROM principal WHERE email=? UNION SELECT email, role FROM students WHERE email=? UNION SELECT email, role FROM teacher WHERE email=?;`,
+    [email, email, email, email, email],
     async (error, user) => {
       if (error) {
         return res.status(400).json({ error });
@@ -650,8 +625,8 @@ exports.forgotPassword = (req, res) => {
       const otpcode = Math.floor(Math.random() * 10000 + 1);
 
       const otp_data = await express.db.query(
-        `INSERT INTO otp(email, otp, expires_in) VALUES (?, ?, ?)`,
-        [email, otpcode, new Date().getTime() + 600000],
+        `INSERT INTO otp(email, otp, expires_in, role) VALUES (?, ?, ?, ?)`,
+        [email, otpcode, new Date().getTime() + 600000, user[0].role],
         async (e, r) => {
           if (e) {
             return res.status(400).json({ e });
@@ -698,7 +673,6 @@ const mailer = (email, otp) => {
 };
 
 exports.resetPassword = (req, res) => {
-  console.log(req.body);
   const { email, otp, new_password } = req.body;
 
   const checkOTP_Email = express.db.query(
@@ -719,7 +693,7 @@ exports.resetPassword = (req, res) => {
           } else {
             const hash_password = await bcrypt.hash(new_password, 10);
             const updatePass = express.db.query(
-              `UPDATE admin
+              `UPDATE ${item[0].role}
             SET password = ?
             WHERE email = ?;`,
               [hash_password, email],
