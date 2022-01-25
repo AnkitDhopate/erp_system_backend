@@ -530,6 +530,7 @@ exports.deleteData = async (req, res) => {
 };
 
 exports.editData = async (req, res) => {
+  console.log(req.body);
   const { role } = req.params;
   const { _id, name, email, contact, roll_no, branch, dob } = req.body;
 
@@ -538,10 +539,12 @@ exports.editData = async (req, res) => {
       `UPDATE admin SET name="${name}", email="${email}", contact="${contact}" WHERE _id = ${_id} `,
       (err, result) => {
         if (err) {
+          console.log(err);
           return res.status(400).json({ err });
         }
 
         if (result) {
+          console.log(result);
           return res.status(201).json({ result });
         }
         console.log(result);
@@ -552,10 +555,12 @@ exports.editData = async (req, res) => {
       `UPDATE hod SET name="${name}", email="${email}", contact="${contact}" , branch="${branch}" WHERE _id = ${_id} `,
       (err, result) => {
         if (err) {
+          console.log(err);
           return res.status(400).json({ err });
         }
 
         if (result) {
+          console.log(result);
           return res.status(201).json({ result });
         }
         console.log(result);
