@@ -24,16 +24,13 @@ const storage = multer.diskStorage({
 
 exports.upload = multer({ storage });
 
-// exports.adminMiddleware = (req, res, next) => {
-//   if (req.user.role !== "admin") {
-//     return res.status(400).json({ req: req.user });
-//   }
-//   next();
-// };
+// const resourceStorage = multer.diskStorage({
+//   destination: function (res, file, cb) {
+//     cb(null, "learning_resources");
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, shortid.generate() + "-" + file.originalname);
+//   },
+// });
 
-// exports.userMiddleware = (req, res, next) => {
-//   if (req.user.role !== "user") {
-//     return res.status(400).json({ error: "Access Denied" });
-//   }
-//   next();
-// };
+// exports.learningResourceUpload = multer({ resourceStorage });

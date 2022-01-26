@@ -25,6 +25,10 @@ app.use(cors());
 app.use("/erp", routes);
 
 app.use("/public", express.static(path.join(__dirname, "uploads")));
+// app.use(
+//   "/resources",
+//   express.static(path.join(__dirname, "learning_resources"))
+// );
 
 connect;
 
