@@ -8,6 +8,8 @@ const {
   editData,
   forgotPassword,
   resetPassword,
+  uploadLearingResource,
+  view_learning_resources,
 } = require("../controllers/commonController");
 const { upload, requireSignIn } = require("../middlewares/middleware");
 const {
@@ -33,5 +35,12 @@ router.delete("/:role/delete-data/:_id", requireSignIn, deleteData);
 router.put("/:role/edit-data", requireSignIn, editData);
 router.post("/forgot-password", forgotPassword);
 router.put("/reset-password", resetPassword);
+router.post(
+  "/upload-learing-resource",
+  upload.single("file_path"),
+  requireSignIn,
+  uploadLearingResource
+);
+router.get("/learning-resources", requireSignIn, view_learning_resources);
 
 module.exports = router;

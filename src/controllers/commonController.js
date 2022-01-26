@@ -727,3 +727,33 @@ exports.resetPassword = (req, res) => {
     }
   );
 };
+
+exports.uploadLearingResource = async (req, res) => {
+  console.log(req.file);
+  const { file_name, uploaded_by, subject, time } = req.body;
+  const file_path = process.env.CLIENT_URL + "/public/" + req.file.filename;
+
+  const file_upl = await express.db.query(
+    `INSERT INTO learning_resources (file_name, uploaded_by, subject, time, file_path) VALUES (?,?,?,?,?)`,
+    [file_name, uploaded_by, subject, time, file_path],
+    (error, result) => {
+      if (error) {
+        return res.status(400).json({ error });
+      }
+
+      return res.status(201).json({ result });
+    }
+  );
+};
+
+exports.view_learning_resources = (req, res) => {
+  express.db.query("SELECT * FROM learning_resources", async (err, result) => {
+    if (err) {
+      return res.status(400).json({ err });
+    }
+
+    if (result) {
+      return res.status(201).json({ result });
+    }
+  });
+};
