@@ -10,6 +10,9 @@ const {
   resetPassword,
   uploadLearingResource,
   view_learning_resources,
+  feePayment,
+  paymentCallback,
+  razorpay,
 } = require("../controllers/commonController");
 const { upload, requireSignIn } = require("../middlewares/middleware");
 const {
@@ -42,5 +45,8 @@ router.post(
   uploadLearingResource
 );
 router.get("/learning-resources", requireSignIn, view_learning_resources);
+router.post("/razorpay", razorpay);
+// router.get("/account-fee", feePayment);
+// router.post("/payment-callback", paymentCallback);
 
 module.exports = router;
