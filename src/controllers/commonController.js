@@ -3,6 +3,8 @@ const express = require("../connect");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
 const env = require("dotenv");
+const Razorpay = require("razorpay");
+const uniqid = require("uniqid");
 var nodemailer = require("nodemailer");
 
 env.config();
@@ -757,3 +759,45 @@ exports.view_learning_resources = (req, res) => {
     }
   });
 };
+
+exports.razorpay = async (req, res) => {
+  var razorpay = new Razorpay({
+    key_id: process.env.RAZOR_KEY_ID,
+    key_secret: process.env.RAZOR_KEY_SECRETE,
+  });
+
+  try {
+    const result = await razorpay.orders.create({
+      amount: "5000",
+      currency: "INR",
+      receipt: uniqid(),
+      payment_capture: 1,
+    });
+
+    console.log(result);
+    return res.status(201).json({ result });
+  } catch (error) {
+    console.log({ error });
+  }
+};
+
+// exports.feePayment = (req, res) => {
+// var instance = new Razorpay({
+//   key_id: process.env.RAZOR_KEY_ID,
+//   key_secret: process.env.RAZOR_KEY_SECRETE,
+// });
+
+//   var options = {
+//     amount: 50000, // amount in the smallest currency unit
+//     currency: "INR",
+//     receipt: uniqid(),
+//   };
+//   instance.orders.create(options, function (err, order) {
+//     if (err) {
+//       return res.status(500).json({ error: err });
+//     }
+//     return res.status(201).json({ order });
+//   });
+// };
+
+// exports.paymentCallback = (req, res) => {};
