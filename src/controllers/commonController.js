@@ -768,7 +768,7 @@ exports.razorpay = async (req, res) => {
 
   try {
     const result = await razorpay.orders.create({
-      amount: "5000",
+      amount: "10000",
       currency: "INR",
       receipt: uniqid(),
       payment_capture: 1,
@@ -780,24 +780,3 @@ exports.razorpay = async (req, res) => {
     console.log({ error });
   }
 };
-
-// exports.feePayment = (req, res) => {
-// var instance = new Razorpay({
-//   key_id: process.env.RAZOR_KEY_ID,
-//   key_secret: process.env.RAZOR_KEY_SECRETE,
-// });
-
-//   var options = {
-//     amount: 50000, // amount in the smallest currency unit
-//     currency: "INR",
-//     receipt: uniqid(),
-//   };
-//   instance.orders.create(options, function (err, order) {
-//     if (err) {
-//       return res.status(500).json({ error: err });
-//     }
-//     return res.status(201).json({ order });
-//   });
-// };
-
-// exports.paymentCallback = (req, res) => {};
