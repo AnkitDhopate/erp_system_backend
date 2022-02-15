@@ -774,7 +774,6 @@ exports.razorpay = async (req, res) => {
       payment_capture: 1,
     });
 
-    console.log(result);
     return res.status(201).json({ result });
   } catch (error) {
     console.log({ error });
