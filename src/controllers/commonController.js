@@ -532,7 +532,7 @@ exports.deleteData = async (req, res) => {
 };
 
 exports.editData = async (req, res) => {
-  console.log(req.body);
+  console.log("hi");
   const { role } = req.params;
   const { _id, name, email, contact, roll_no, branch, dob } = req.body;
 
@@ -579,7 +579,6 @@ exports.editData = async (req, res) => {
         if (result) {
           return res.status(201).json({ result });
         }
-        console.log(result);
       }
     );
   } else if (role === "teacher") {
@@ -593,7 +592,6 @@ exports.editData = async (req, res) => {
         if (result) {
           return res.status(201).json({ result });
         }
-        console.log(result);
       }
     );
   } else if (role === "student") {
